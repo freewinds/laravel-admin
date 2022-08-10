@@ -979,13 +979,6 @@ class Column
             $sort = ['column' => $this->name, 'type' => $type];
         }
         
-        if (isset($this->sortCallback)) {
-            $sort['callback'] = 1;
-        }
-        elseif (isset($this->cast)) {
-            $sort['cast'] = $this->cast;
-        }
-
         $query = app('request')->all();
         $query = array_merge($query, [$this->grid->model()->getSortName() => $sort]);
 
