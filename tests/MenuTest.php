@@ -26,7 +26,7 @@ class MenuTest extends TestCase
 
     public function testAddMenu()
     {
-        $client_mock = \Mockery::mock('overload:\ExmentDB');
+        $client_mock = \Mockery::mock('overload:DB');
         $client_mock->shouldReceive('transaction')->once();
 
         $item = ['parent_id' => '0', 'title' => 'Test', 'uri' => 'test'];

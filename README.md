@@ -4,7 +4,7 @@
 </a>
 
 <h2 align="center">IMPORTANT</h2>
-<p>This repository is forked from "z-song/laravel-admin". This repository is customized for exceedone/exment.</p>
+<p>This repository is forked from exceedone/laravel-admin, based on "z-song/laravel-admin". </p>
 
  - Support sub directory.
  - Enable getting child model in hasmany field.

@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
@@ -471,7 +472,7 @@ class Form implements Renderable
             return $response;
         }
 
-        \ExmentDB::transaction(function () {
+        DB::transaction(function () {
             $inserts = $this->prepareInsert($this->updates);
 
             foreach ($inserts as $column => $value) {
@@ -479,16 +480,15 @@ class Form implements Renderable
             }
 
             $this->model->save();
-            $this->storeJancode($this->model);
 
             $this->updateRelation($this->relations);
 
             try{
                 if (($response = $this->callSavedInTransaction()) instanceof Response) {
                     return $response;
-                }    
+                }
             }catch(\Exception $ex){
-                \Log::error($ex);
+                Log::error($ex);
                 DB::rollback();
                 throw $ex;
             }
@@ -503,31 +503,6 @@ class Form implements Renderable
         }
 
         return $this->redirectAfterStore();
-    }
-
-    /**
-     * Save Jancode
-     *
-     * @param mixed $model
-     *
-     * @return void
-     */
-    protected function storeJancode($model)
-    {
-        $jan_code = request()->get('jan_code');
-        $table_code = request()->get('table_code');
-        if ($jan_code && $table_code) {
-            DB::table('jan_codes')
-                ->insert([
-                    'table_id' => $table_code,
-                    'target_id' => $model->id,
-                    'jan_code' => $jan_code,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                    'created_user_id' => \Exment::user()->base_user_id,
-                    'updated_user_id' => \Exment::user()->base_user_id,
-                ]);
-        };
     }
 
     /**
@@ -664,7 +639,7 @@ class Form implements Renderable
             return $response;
         }
 
-        \ExmentDB::transaction(function () {
+        DB::transaction(function () {
             $updates = $this->prepareUpdate($this->updates);
 
             foreach ($updates as $column => $value) {
@@ -675,11 +650,11 @@ class Form implements Renderable
             $this->model->save();
 
             $this->updateRelation($this->relations);
-            
+
             try{
                 if (($response = $this->callSavedInTransaction()) instanceof Response) {
                     return $response;
-                }    
+                }
             }catch(\Exception $ex){
                 DB::rollback();
                 throw $ex;
@@ -699,7 +674,7 @@ class Form implements Renderable
         return $this->redirectAfterUpdate($id);
     }
 
-    
+
     /**
      * validatorSavingCallback
      *
@@ -711,7 +686,7 @@ class Form implements Renderable
 
         return $this;
     }
-    
+
 
     /**
      * prepareCallback. Please return inputs array
@@ -768,7 +743,7 @@ class Form implements Renderable
             return $response;
         }
 
-        \ExmentDB::transaction(function () {
+        DB::transaction(function () {
             $updates = $this->prepareUpdate($this->updates);
 
             foreach ($updates as $column => $value) {
@@ -779,11 +754,11 @@ class Form implements Renderable
             $this->model->save();
 
             $this->updateRelation($this->relations);
-            
+
             try{
                 if (($response = $this->callSavedInTransaction()) instanceof Response) {
                     return $response;
-                }    
+                }
             }catch(\Exception $ex){
                 DB::rollback();
                 throw $ex;
@@ -886,7 +861,7 @@ class Form implements Renderable
         $redirect = $this->builder()->getFooter()->getRedirect($resourcesPath, $key, request('after-save'));
 
         admin_toastr(trans('admin.save_succeeded'));
-        
+
         if(isset($redirect)){
             return $redirect;
         }
@@ -1226,7 +1201,7 @@ class Form implements Renderable
             if (!$field->getInternal()) {
                 continue;
             }
-            
+
             $column = $field->column();
             $inserts[$column] = $field->prepare(null);
         }
@@ -1268,7 +1243,7 @@ class Form implements Renderable
             if (!$field->getInternal()) {
                 continue;
             }
-            
+
             $column = $field->column();
             $inserts[$column] = $field->prepareConfirm(null);
         }
@@ -1474,7 +1449,7 @@ class Form implements Renderable
 
         $relations = [];
         foreach ($inputs as $column => $value) {
-            
+
             if (!method_exists($this->model, $column)) {
                 continue;
             }
@@ -1484,13 +1459,13 @@ class Form implements Renderable
             if (!($relation instanceof Relations\Relation)) {
                 continue;
             }
-            
+
             $value = array_filter($value);
             if ($relation instanceof Relations\BelongsToMany || $relation instanceof Relations\MorphToMany) {
                 $relations[$column] = (clone $relation->getRelated())->query()->findMany($value);
                 continue;
             }
-            
+
             // create child model
             foreach($value as $v){
                 if(is_null($v)){
@@ -1600,7 +1575,7 @@ class Form implements Renderable
         }
         return true;
     }
-    
+
 
     /**
      * Get validation messages.
@@ -1947,7 +1922,7 @@ class Form implements Renderable
     /**
      * add footer check item.
      *
-     * $footerCheck : 
+     * $footerCheck :
      *     [
      *         'value': 'foo', // this check value name
      *         'label': 'FOO', // this check label
@@ -1984,7 +1959,7 @@ class Form implements Renderable
      * Set if true, not call default renderException, and \Closure.
      *
      * @return  self
-     */ 
+     */
     public function renderException(\Closure $renderException)
     {
         $this->renderException = $renderException;
