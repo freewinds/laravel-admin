@@ -36,7 +36,7 @@ class PermissionController extends AdminController
         $grid->column('slug', trans('admin.slug'));
         $grid->column('name', trans('admin.name'));
 
-        $grid->column('http_path', trans('admin.route'))->display(function ($path) {
+        $grid->column('http_path', trans('admin.route'))->escape(false)->display(function ($path) {
             return collect(explode("\n", $path))->map(function ($path) {
                 $method = $this->http_method ?: ['ANY'];
 
