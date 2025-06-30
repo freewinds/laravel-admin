@@ -7,6 +7,7 @@ use Encore\Admin\Exception\Handler;
 use Encore\Admin\Form\Builder;
 use Encore\Admin\Form\Field;
 use Encore\Admin\Form\HasHooks;
+use Encore\Admin\Form\Layout\Layout;
 use Encore\Admin\Form\Row;
 use Encore\Admin\Form\Tab;
 use Encore\Admin\Grid\Tools\Footer;
@@ -138,6 +139,11 @@ class Form implements Renderable
      * @var array<mixed>
      */
     protected $inputs = [];
+
+    /**
+     * @var Layout
+     */
+    protected $layout;
 
     /**
      * Available fields.
@@ -276,6 +282,7 @@ class Form implements Renderable
         $field->setForm($this);
 
         $this->builder->fields()->push($field);
+        $this->layout->addField($field);
 
         return $this;
     }
@@ -304,6 +311,15 @@ class Form implements Renderable
     public function builder()
     {
         return $this->builder;
+    }
+
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function fields()
+    {
+        return $this->builder()->fields();
     }
 
     /**
@@ -415,7 +431,7 @@ class Form implements Renderable
                 'message' => trans('admin.delete_succeeded'),
             ];
         } catch (\Exception $exception) {
-            \Log::error($exception);
+            Log::error($exception);
             $response = [
                 'status'  => false,
                 'message' => $exception->getMessage() ?: trans('admin.delete_failed'),
@@ -1784,6 +1800,26 @@ class Form implements Renderable
     }
 
     /**
+     * Indicates if current form page is creating.
+     *
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), ['.create', '.store']);
+    }
+
+    /**
+     * Indicates if current form page is editing.
+     *
+     * @return bool
+     */
+    public function isEditing(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), ['.edit', '.update']);
+    }
+
+    /**
      * Set submit label.
      *
      * @return $this
@@ -2015,6 +2051,31 @@ class Form implements Renderable
     }
 
     /**
+     * Add a new layout column.
+     *
+     * @param int      $width
+     * @param \Closure $closure
+     *
+     * @return $this
+     */
+    public function column($width, \Closure $closure): self
+    {
+        $width = $width < 1 ? round(12 * $width) : $width;
+
+        $this->layout->column($width, $closure);
+
+        return $this;
+    }
+
+    /**
+     * Initialize filter layout.
+     */
+    protected function initLayout()
+    {
+        $this->layout = new Layout($this);
+    }
+
+    /**
      * Register builtin fields.
      *
      * @return void
@@ -2193,6 +2254,18 @@ class Form implements Renderable
     }
 
     /**
+     * __isset.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->inputs[$name]);
+    }
+
+    /**
      * Generate a Field object and add to form builder if Field exists.
      *
      * @param string $method
@@ -2215,5 +2288,10 @@ class Form implements Renderable
         admin_error('Error', "Field type [$method] does not exist.");
 
         return new Field\Nullable();
+    }
+
+    public function getLayout(): Layout
+    {
+        return $this->layout;
     }
 }

@@ -48,14 +48,14 @@ class SwitchField extends Field
         $this->rules([new HasOptionRule($this)]);
     }
 
-    /**
-     * @return array<mixed>
-     */
-    public function getOptions(){
-        return collect($this->states)->mapWithKeys(function($state){
-            return [Arr::get($state, 'value') => Arr::get($state, 'text')];
-        })->toArray();
-    }
+    ///**
+    // * @return array<mixed>
+    // */
+    //public function getOptions(){
+    //    return collect($this->states)->mapWithKeys(function($state){
+    //        return [Arr::get($state, 'value') => Arr::get($state, 'text')];
+    //    })->toArray();
+    //}
 
     /**
      * @param string $size
