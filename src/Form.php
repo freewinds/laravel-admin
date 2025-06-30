@@ -235,6 +235,8 @@ class Form implements Renderable
 
         $this->builder = new Builder($this);
 
+        $this->initLayout();
+
         if ($callback instanceof Closure) {
             $callback($this);
         }
