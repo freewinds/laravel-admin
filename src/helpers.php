@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\MessageBag;
 
 if (!function_exists('admin_path')) {
@@ -32,7 +33,7 @@ if (!function_exists('admin_url')) {
         if (\Illuminate\Support\Facades\URL::isValidUrl($path)) {
             return $path;
         }
-        
+
         if(!isset($secure)){
             if(\Request::secure() === true){
                 $secure = true;
@@ -271,6 +272,23 @@ if (!function_exists('array_delete')) {
     }
 }
 
+if (!function_exists('array_get')) {
+    /**
+     * Get an item from an array using "dot" notation.
+     *
+     * @param \ArrayAccess|array $array
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     *
+     * @deprecated Arr::get() should be used directly instead. Will be removed in Laravel 6.0.
+     */
+    function array_get($array, $key, $default = null)
+    {
+        return Arr::get($array, $key, $default);
+    }
+}
+
 if (!function_exists('class_uses_deep')) {
 
     /**
@@ -395,7 +413,7 @@ if (!function_exists('json_encode_options')) {
 
         return str_replace($data['toReplace'], $data['original'], $json);
     }
-    
+
     if (!function_exists('strcmp_ex')) {
         /**
          * Wrapper for strcmp that throws when an error occurs.
@@ -413,7 +431,7 @@ if (!function_exists('json_encode_options')) {
             return strcmp($string1, $string2);
         }
     }
-    
+
     if (!function_exists('strpos_ex')) {
         /**
          * Wrapper for strpos that throws when an error occurs.
@@ -431,7 +449,7 @@ if (!function_exists('json_encode_options')) {
             return strpos($haystack, $needle, $offset);
         }
     }
-    
+
     if (!function_exists('strlen_ex')) {
         /**
          * Wrapper for strlen that throws when an error occurs.
@@ -447,7 +465,7 @@ if (!function_exists('json_encode_options')) {
             return strlen($string);
         }
     }
-    
+
     if (!function_exists('ucfirst_ex')) {
         /**
          * Wrapper for ucfirst that throws when an error occurs.
@@ -463,7 +481,7 @@ if (!function_exists('json_encode_options')) {
             return ucfirst($string);
         }
     }
-    
+
     if (!function_exists('explode_ex')) {
         /**
          * Wrapper for explode that throws when an error occurs.
@@ -481,7 +499,7 @@ if (!function_exists('json_encode_options')) {
             return explode($separator, $string, $limit);
         }
     }
-    
+
     if (!function_exists('parse_url_ex')) {
         /**
          * Wrapper for parse_url that throws when an error occurs.
@@ -498,13 +516,13 @@ if (!function_exists('json_encode_options')) {
             return parse_url($url, $component);
         }
     }
-    
+
     if (!function_exists('htmlentities_ex')) {
         /**
          * Wrapper for htmlentities that throws when an error occurs.
          *
          * @param ?string $string   input value
-         * @param int     $flags    A bit mask that combines flags. 
+         * @param int     $flags    A bit mask that combines flags.
          *                          Specifies quotes, invalid code unit sequences, and document type handling.
          * @param ?string $encoding Defines the encoding used when converting characters.
          * @param bool    $double_encode If double_encode is turned off, PHP will not encode existing html entities.
@@ -522,14 +540,14 @@ if (!function_exists('json_encode_options')) {
             return htmlentities($string, $flags, $encoding, $double_encode);
         }
     }
-    
-    
+
+
     if (!function_exists('htmlspecialchars_ex')) {
         /**
          * Wrapper for htmlspecialchars that throws when an error occurs.
          *
          * @param ?string $string   input value
-         * @param int     $flags    A bit mask that combines flags. 
+         * @param int     $flags    A bit mask that combines flags.
          *                          Specifies quotes, invalid code unit sequences, and document type handling.
          * @param ?string $encoding Defines the encoding used when converting characters.
          * @param bool    $double_encode If double_encode is turned off, PHP will not encode existing html entities.
@@ -548,7 +566,7 @@ if (!function_exists('json_encode_options')) {
             return htmlspecialchars($string, $flags, $encoding, $double_encode);
         }
     }
-    
+
     if (!function_exists('str_replace_ex')) {
         /**
          * Wrapper for str_replace that throws when an error occurs.
@@ -571,7 +589,7 @@ if (!function_exists('json_encode_options')) {
             return str_replace($search, $replace, $subject, $count);
         }
     }
-    
+
     if (!function_exists('preg_match_ex')) {
         /**
          * Wrapper for preg_match that throws when an error occurs.
@@ -579,7 +597,7 @@ if (!function_exists('json_encode_options')) {
          * @param string  $pattern A string that represents the pattern to search for
          * @param ?string $subject input value
          * @param array<string>   $matches If matches is specified, the search results will be assigned.
-         * @param int     $flags   mattching type flags. 
+         * @param int     $flags   mattching type flags.
          * @param int     $offset  Specify the start position of the search (in bytes)
          *
          * @return int|false
